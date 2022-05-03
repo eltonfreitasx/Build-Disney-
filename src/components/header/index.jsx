@@ -2,7 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import logo from "./../../assets/images/logo.svg";
+
 import homeIcon from "./../../assets/images/home-icon.svg";
+import searchIcon from "./../../assets/images/search-icon.svg";
+import watchList from "./../../assets/images/watchlist-icon.svg";
+
+import originals from "./../../assets/images/original-icon.svg";
+import movies from "./../../assets/images/movie-icon.svg";
+import series from "./../../assets/images/series-icon.svg";
 
 const Header = (props) => {
   return (
@@ -13,8 +20,28 @@ const Header = (props) => {
       <NavMenu>
         <Link to="/">
           <img src={homeIcon} alt="home Icon" />
+          <span to="/">HOME</span>
         </Link>
-        <span to="/">HOME</span>
+        <Link to="/">
+          <img src={searchIcon} alt="home Icon" />
+          <span to="/">SEARCH</span>
+        </Link>
+        <Link to="/">
+          <img src={watchList} alt="home Icon" />
+          <span to="/">WATCHLIST</span>
+        </Link>
+        <Link to="/">
+          <img src={originals} alt="home Icon" />
+          <span to="/">ORIGINALS</span>
+        </Link>
+        <Link to="/">
+          <img src={movies} alt="home Icon" />
+          <span to="/">MOVIES</span>
+        </Link>
+        <Link to="/">
+          <img src={series} alt="home Icon" />
+          <span>SERIES</span>
+        </Link>
       </NavMenu>
     </Nav>
   );
@@ -56,17 +83,15 @@ const NavMenu = styled.div`
   height: 100%;
   justify-content: flex-end;
   padding: 0px;
-  margin: 0;
+  margin: 0px;
   position: relative;
   margin-right: auto;
   margin-left: 25px;
 
-  
   a {
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-    }
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
 
     img {
       height: 20px;
@@ -74,7 +99,7 @@ const NavMenu = styled.div`
       width: 20px;
       z-index: auto;
     }
-    
+
     span {
       color: rgb(249, 249, 249);
       font-size: 13px;
@@ -83,13 +108,12 @@ const NavMenu = styled.div`
       padding: 2px 0px;
       white-space: nowrap;
       position: relative;
-    
 
-    &:before {
-        background-color: rgb(249,249, 249);
+      &:before {
+        background-color: rgb(249, 249, 249);
         border-radius: 0px 0px 4px 4px;
         bottom: -6px;
-        content: '';
+        content: "";
         height: 2px;
         opacity: 0;
         position: absolute;
@@ -100,18 +124,18 @@ const NavMenu = styled.div`
         transition: all 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s;
         visibility: hidden;
         width: auto;
+      }
     }
-}
-
     &:hover {
-        span:before{
-            transform: scaleX(1);
-            visibility: visible;
-            opacity: 1 !important;
-        }
+      span:before {
+        transform: scaleX(1);
+        visibility: visible;
+        opacity: 1 !important;
+      }
     }
+  }
 
-   /*@media (max-width: 768px) {
+  /*@media (max-width: 768px) {
     display: none;
   }*/
 `;
