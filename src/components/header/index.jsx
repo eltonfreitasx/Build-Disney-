@@ -6,12 +6,38 @@ import logo from "./../../assets/images/logo.svg";
 import homeIcon from "./../../assets/images/home-icon.svg";
 import searchIcon from "./../../assets/images/search-icon.svg";
 import watchList from "./../../assets/images/watchlist-icon.svg";
-
 import originals from "./../../assets/images/original-icon.svg";
 import movies from "./../../assets/images/movie-icon.svg";
 import series from "./../../assets/images/series-icon.svg";
 
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { app } from "../firebase";
+
+const provider = new GoogleAuthProvider();
+
 const Header = (props) => {
+  const auth = getAuth(app);
+
+  const singInGoogle = () =>{
+    signInWithPopup(auth, provider)
+    .then((result) => {
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      console.log(result)
+      const user = result.user;
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+
+      const email = error.email;
+
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+    });
+  }
+ 
+
   return (
     <Nav>
       <Logo>
@@ -43,6 +69,7 @@ const Header = (props) => {
           <span>SERIES</span>
         </Link>
       </NavMenu>
+      <Login onClick={singInGoogle}>Login</Login>
     </Nav>
   );
 };
@@ -138,6 +165,23 @@ const NavMenu = styled.div`
   /*@media (max-width: 768px) {
     display: none;
   }*/
+`;
+
+const Login = styled.a`
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border: 1px solid #f9f9f9f9;
+  border-radius: 4px;
+  transition: all 0.2s ease 0s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f9f9f9f9;
+    color: #000;
+    border-color: transparent;
+  }
 `;
 
 export default Header;
