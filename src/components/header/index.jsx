@@ -1,8 +1,8 @@
-import React from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import logo from "./../../assets/images/logo.svg";
 
+import logo from "./../../assets/images/logo.svg";
 import homeIcon from "./../../assets/images/home-icon.svg";
 import searchIcon from "./../../assets/images/search-icon.svg";
 import watchList from "./../../assets/images/watchlist-icon.svg";
@@ -15,11 +15,11 @@ import { app } from "../firebase";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { auth, provider } from "../firebase";
 import {
   selectUserName,
   selectUserPhoto,
   setUserLoginDetails,
+  setSignOutState
 } from "../../services/features/users/userSlice";
 
 const Header = (props) => {
@@ -31,25 +31,40 @@ const Header = (props) => {
   const provider = new GoogleAuthProvider();
   const auth = getAuth(app);
 
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUser(user);
+        history.push("/home");
+      }
+    });
+  }, [userName]);
+
   const singInGoogle = () => {
+    if (!userName) {
     signInWithPopup(auth, provider)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
         setUser(result.user);
-        console.log(result);
-        const user = result.user;
+        // const credential = GoogleAuthProvider.credentialFromResult(result);
+        //const token = credential.accessToken;
+        //const user = result.user;
       })
       .catch((error) => {
-        const errorCode = error.code;
         const errorMessage = error.message;
         alert(errorMessage);
-        const email = error.email;
-
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
+        //const errorCode = error.code;
+        //const email = error.email;
+        //const credential = GoogleAuthProvider.credentialFromError(error);
       });
-  };
+  }else if (userName) {
+    auth
+        .signOut()
+        .then(() => {
+          dispatch(setSignOutState());
+          history.push("/");
+        })
+        .catch((err) => alert(err.message));
+  }}
 
   const setUser = (user) => {
     dispatch(
@@ -64,44 +79,46 @@ const Header = (props) => {
   return (
     <Nav>
       <Logo>
-        <img src={logo} alt="logo disney" />
+        <img src={logo} alt="disney" />
       </Logo>
 
       {!userName ? (
         <Login onClick={singInGoogle}>Login</Login>
       ) : (
         <>
-         
-      
-
-      <NavMenu>
-        <Link to="/">
-          <img src={homeIcon} alt="HOME" />
-          <span to="/">HOME</span>
-        </Link>
-        <Link to="/">
-          <img src={searchIcon} alt="SEARCH" />
-          <span to="/">SEARCH</span>
-        </Link>
-        <Link to="/">
-          <img src={watchList} alt="WATCHLIST" />
-          <span to="/">WATCHLIST</span>
-        </Link>
-        <Link to="/">
-          <img src={originals} alt="ORIGINALS" />
-          <span to="/">ORIGINALS</span>
-        </Link>
-        <Link to="/">
-          <img src={movies} alt="MOVIES" />
-          <span to="/">MOVIES</span>
-        </Link>
-        <Link to="/">
-          <img src={series} alt="SERIES" />
-          <span>SERIES</span>
-        </Link>
-      </NavMenu>
-      <UserImg src={userPhoto} alt={userName} />
-      </>
+          <NavMenu>
+            <Link href="/home">
+              <img src={homeIcon} alt="HOME" />
+              <span>HOME</span>
+            </Link>
+            <Link>
+              <img src={searchIcon} alt="SEARCH" />
+              <span>SEARCH</span>
+            </Link>
+            <Link>
+              <img src={watchList} alt="WATCHLIST" />
+              <span>WATCHLIST</span>
+            </Link>
+            <Link>
+              <img src={originals} alt="ORIGINALS" />
+              <span>ORIGINALS</span>
+            </Link>
+            <Link>
+              <img src={movies} alt="MOVIES" />
+              <span>MOVIES</span>
+            </Link>
+            <Link>
+              <img src={series} alt="SERIES" />
+              <span>SERIES</span>
+            </Link>
+          </NavMenu>
+          <SingOut>
+            <UserImg src={userPhoto} alt={userName} />
+            <DropDown>
+              <span onClick={singInGoogle}>Sign out</span>
+            </DropDown>
+          </SingOut>
+        </>
       )}
     </Nav>
   );
@@ -218,8 +235,45 @@ const Login = styled.a`
 `;
 
 const UserImg = styled.img`
-  height: 80%;
-  border-radius: 50px;
+  height: 100%;
+`;
+
+const DropDown = styled.div`
+  position: absolute;
+  top: 48px;
+  right: 0px;
+  background-color: rgb(19,19,19);
+  border: 1px solid rgba(151, 151, 151, 0.34);
+  border-radius: 4px;
+  box-shadow: rgb(0 0 0 / 50%) 0px 0px 0px 18px 0px;
+  padding: 10px;
+  font-size: 14px;
+  letter-spacing: 3px;
+  width: 100px;
+  opacity:0;
+`
+
+const SingOut = styled.div`
+  position: relative;
+  height: 48px;
+  width: 48px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+
+  ${UserImg} {
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    ${DropDown} {
+      opacity: 1;
+      transition-duration: 1s;
+    }
+  }
 `
 
 export default Header;
